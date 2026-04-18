@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOTNFT.xyz</title>
+  <style>
+    :root{
+      --bg:#f4f4f4;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --grad:linear-gradient(90deg,#63b3ff 0%, #9ef0e0 50%, #f0d8cb 100%);
+      --shadow:0 10px 28px rgba(0,0,0,.08);
+      --radius:22px;
+      --dark:#0f172a;
+      --dark2:#111827;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --bad:#dc2626;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+    .app{max-width:430px;margin:0 auto;min-height:100vh;background:#f6f6f6;padding-bottom:110px}
+    .topbar{height:84px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:40}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+    .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#b1dcff,#dffef3,#ffdfe7);border:1px solid #ddd}
+    .top-actions{display:flex;align-items:center;gap:14px}
+    .airdrop{font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .menu{font-size:26px;cursor:pointer}
+    .content{padding:16px}
+    .screen{display:none}
+    .screen.active{display:block}
+    .hero{background:radial-gradient(circle at 80% 15%, rgba(140,245,221,.8) 0 17%, transparent 18%),radial-gradient(circle at 96% 35%, rgba(109,208,255,.68) 0 14%, transparent 15%),linear-gradient(90deg,#dff4ef 0%, #f8e9e1 100%);border-radius:0 0 28px 28px;margin:-16px -16px 16px;padding:16px 16px 18px}
+    .card{background:var(--card);border:1px solid rgba(0,0,0,.04);border-radius:var(--radius);padding:18px 16px;box-shadow:0 2px 0 rgba(0,0,0,.02);margin-bottom:14px}
+    .title{margin:0;font-size:18px;font-weight:800}
+    .line{height:1px;background:var(--line);margin:12px 0 16px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .muted{color:var(--muted)}
+    .balanceRow{display:flex;align-items:center;gap:10px}
+    .coin{width:30px;height:30px;border-radius:50%;background:#22b573;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+    .amount{font-size:18px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+    .stats .num{font-size:18px;font-weight:800;margin-bottom:8px}
+    .stats .lbl{font-size:13px;color:#555;line-height:1.25}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center}
+    .iconBtn{cursor:pointer;padding:4px 2px}
+    .icon{width:44px;height:44px;border-radius:50%;margin:0 auto 10px;background:var(--grad);display:flex;align-items:center;justify-content:center}
+    .sub{font-size:13px;color:#555}
+    .avatarWrap{display:flex;gap:16px;align-items:center;padding:10px 4px 0}
+    .avatar{width:114px;height:114px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #fff 0, #d8f7ff 20%, #cdd7ff 40%, #fde2f1 68%, #adf4ff 100%);border:4px solid #90d7ff}
+    .username{font-size:24px;font-weight:800;margin:0 0 16px;word-break:break-word}
+    .chips{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{border:1.5px solid #9a9a9a;border-radius:999px;padding:10px 14px;background:rgba(255,255,255,.55);font-size:15px}
+    .optionGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .option{text-align:center;padding:10px 8px;cursor:pointer}
+    .optIcon{width:42px;height:42px;border-radius:50%;margin:0 auto 10px;background:var(--grad);display:flex;align-items:center;justify-content:center}
+    .optTitle{font-size:17px;font-weight:800;line-height:1.2}
+    .bound{color:#47d4c4;margin-top:6px;font-weight:800;font-size:18px}
+    .item{display:flex;align-items:center;justify-content:space-between;padding:16px 6px;border-bottom:1px solid var(--line);font-size:18px;cursor:pointer}
+    .item:last-child{border-bottom:none}
+    .left{display:flex;align-items:center;gap:14px}
+    .ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+    .btn{width:100%;border:none;border-radius:18px;padding:16px;background:var(--grad);font-size:16px;font-weight:800;color:#fff;box-shadow:var(--shadow);cursor:pointer}
+    .btn.dark{background:var(--dark);color:#fff}
+    .btn.light{background:#f4f4f4;color:#111;border:1px solid var(--line);box-shadow:none}
+    .btn.small{width:auto;padding:10px 12px;border-radius:12px;font-size:12px;box-shadow:none}
+    .btn.green{background:var(--ok)}
+    .btn.red{background:var(--bad)}
+    .btn.warn{background:var(--warn)}
+    .input,.select{width:100%;padding:14px;border-radius:16px;border:1px solid var(--line);font-size:15px;background:#fff;color:#111;margin-top:10px}
+    .msg{margin-top:10px;font-size:13px;color:#c0392b;word-break:break-word}
+    .ok{color:#0f8d5d}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .pill.pending{background:#fff7de;color:#9a6b00}
+    .pill.approved{background:#e6faef;color:#0e8b53}
+    .pill.rejected{background:#fdeaea;color:#b93a32}
+    .pill.paid{background:#e6f0ff;color:#2658b8}
+    .history{display:flex;flex-direction:column}
+    .historyItem{padding:12px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+    .historyItem:last-child{border-bottom:none}
+    .back{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:20px;font-weight:700;cursor:pointer}
+    .bottomShell{position:fixed;left:18px;right:18px;bottom:18px;z-index:50}
+    .bottomNav{background:#fff;border-radius:999px;box-shadow:var(--shadow);padding:16px 10px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;text-align:center}
+    .nav{color:#8a8a8a;font-size:15px;cursor:pointer;position:relative}
+    .nav:not(:last-child)::after{content:"|";position:absolute;right:-2px;top:0;color:#bfbfbf}
+    .nav.active{color:#222}
+    .adminWrap{background:linear-gradient(180deg,#0b1224 0%, #0f172a 100%);color:#f8fafc;min-height:100vh;margin:-16px -16px 0;padding:16px}
+    .adminCard{background:rgba(17,24,39,.94);border:1px solid #334155;border-radius:18px;padding:16px;margin-bottom:14px}
+    .adminTitle{margin:0 0 12px;font-size:18px;font-weight:800}
+    .adminStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .adminStat{background:rgba(31,41,55,.95);border:1px solid #334155;border-radius:14px;padding:12px}
+    .adminStat .n{font-size:22px;font-weight:800;margin-bottom:6px}
+    .adminStat .l{font-size:12px;color:#94a3b8}
+    .adminList{display:flex;flex-direction:column;gap:10px}
+    .adminItem{border:1px solid #334155;background:rgba(31,41,55,.9);border-radius:14px;padding:14px}
+    .adminHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:10px}
+    .adminMeta{color:#94a3b8;font-size:13px;margin-top:4px;word-break:break-word}
+    .adminBtns{display:flex;gap:8px;flex-wrap:wrap}
+    .small{font-size:13px;color:#666}
+    @media (max-width:900px){
+      .adminStats{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><div class="logo"></div><div>HOTNFT.xyz</div></div>
+    <div class="top-actions"><div>🔔</div><div class="airdrop">AirDrop</div><div class="menu" id="menuBtn">☰</div></div>
+  </div>
+
+  <div class="content">
+    <section id="authScreen" class="screen active">
+      <div class="card">
+        <h3 class="title">Login / Signup</h3>
+        <div class="line"></div>
+        <input class="input" id="nameInput" placeholder="Your name (for signup)" />
+        <input class="input" id="emailInput" placeholder="Email" />
+        <input class="input" id="passwordInput" type="password" placeholder="Password" />
+        <button class="btn dark" id="signupBtn">Create Account</button>
+        <button class="btn light" id="loginBtn" style="margin-top:10px">Login</button>
+        <button class="btn light" id="googleBtn" style="margin-top:10px">Continue with Google</button>
+        <div class="msg" id="authMsg"></div>
+      </div>
+    </section>
+
+    <section id="homeScreen" class="screen">
+      <div class="card">
+        <div class="walletCardTitle">Wallet Balance</div>
+        <div class="row">
+          <div class="balanceRow"><div class="coin">T</div><div class="amount" id="walletBalanceHome">0.00</div></div>
+          <div class="row" style="gap:6px;font-weight:700;color:#93d7cc"><span>⤴</span><span>Share</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row"><h3 class="title">My Orders</h3><div class="muted" data-open="ordersScreen">View Orders ›</div></div>
+        <div class="line"></div>
+        <div class="stats">
+          <div><div class="num" id="allOrdersCount">0</div><div class="lbl">All Orders</div></div>
+          <div><div class="num" id="openOrdersCount">0</div><div class="lbl">Open Orders</div></div>
+          <div><div class="num" id="approvedOrdersCount">0</div><div class="lbl">Approved</div></div>
+          <div><div class="num" id="rejectedOrdersCount">0</div><div class="lbl">Rejected</div></div>
+        </div>
+        <div class="grid4">
+          <div class="iconBtn" data-open="ordersScreen"><div class="icon">📄</div><div class="sub">Orders</div></div>
+          <div class="iconBtn" data-open="verificationScreen"><div class="icon">✅</div><div class="sub">Verify</div></div>
+          <div class="iconBtn" data-open="settingsScreen"><div class="icon">⚙️</div><div class="sub">Settings</div></div>
+          <div class="iconBtn" data-open="myScreen"><div class="icon">👤</div><div class="sub">My</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="myScreen" class="screen">
+      <div class="hero">
+        <div class="back" data-open="homeScreen">‹</div>
+        <div class="avatarWrap">
+          <div class="avatar"></div>
+          <div>
+            <div class="username" id="profileUsername">Guest</div>
+            <div class="chips">
+              <div class="chip">🐚 Level 1</div>
+              <div class="chip"><span id="profilePoints">10</span> Points</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="optionGrid">
+          <div class="option" data-open="verificationScreen">
+            <div class="optIcon">⟳</div>
+            <div class="optTitle">Google Verification</div>
+            <div class="bound" id="googleVerifyShort">Check</div>
+          </div>
+          <div class="option" data-open="settingsScreen">
+            <div class="optIcon">👤</div>
+            <div class="optTitle">User Settings</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="item" data-open="changePasswordScreen"><div class="left"><div class="ico">🔒</div><div>Change Password</div></div><div class="muted">›</div></div>
+        <div class="item" data-open="settingsScreen"><div class="left"><div class="ico">⌘</div><div>Settings</div></div><div class="muted">›</div></div>
+        <div class="item"><div class="left"><div class="ico">✉️</div><div id="profileEmail">-</div></div><div class="muted" id="profileRole">User</div></div>
+      </div>
+
+      <button class="btn" id="logoutBtn">Log out</button>
+    </section>
+
+    <section id="ordersScreen" class="screen">
+      <div class="card">
+        <div class="back" data-open="homeScreen">‹</div>
+        <h3 class="title">My Requests</h3>
+        <div class="line"></div>
+        <div id="ordersList" class="history"></div>
+      </div>
+    </section>
+
+    <section id="verificationScreen" class="screen">
+      <div class="card">
+        <div class="back" data-open="myScreen">‹</div>
+        <h3 class="title">Google Verification</h3>
+        <div class="line"></div>
+        <div class="history">
+          <div class="historyItem"><div>Auth Provider</div><div id="verifyProvider">-</div></div>
+          <div class="historyItem"><div>Email Verified</div><div id="verifyEmailStatus">-</div></div>
+          <div class="historyItem"><div>Google Linked</div><div id="verifyGoogleStatus">-</div></div>
+          <div class="historyItem"><div>User UID</div><div id="verifyUid" class="small">-</div></div>
+        </div>
+        <button class="btn dark" id="linkGoogleBtn" style="margin-top:14px">Link Google Account</button>
+        <div class="msg" id="verifyMsg"></div>
+      </div>
+    </section>
+
+    <section id="changePasswordScreen" class="screen">
+      <div class="card">
+        <div class="back" data-open="myScreen">‹</div>
+        <h3 class="title">Change Password</h3>
+        <div class="line"></div>
+        <div class="small">A password reset email will be sent to your login email.</div>
+        <div class="historyItem"><div>Account Email</div><div id="resetEmailText">-</div></div>
+        <button class="btn dark" id="sendResetBtn">Send Password Reset Email</button>
+        <div class="msg" id="resetMsg"></div>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen">
+      <div class="card">
+        <div class="back" data-open="myScreen">‹</div>
+        <h3 class="title">User Settings</h3>
+        <div class="line"></div>
+        <input class="input" id="settingsName" placeholder="Display name" />
+        <button class="btn dark" id="saveSettingsBtn">Save Settings</button>
+        <div class="msg" id="settingsMsg"></div>
+      </div>
+      <div class="card">
+        <div class="historyItem"><div>Email</div><div id="settingsEmail">-</div></div>
+        <div class="historyItem"><div>Role</div><div id="settingsRole">User</div></div>
+      </div>
+    </section>
+
+    <section id="adminScreen" class="screen">
+      <div class="adminWrap">
+        <div class="adminStats">
+          <div class="adminStat"><div class="n" id="statPending">0</div><div class="l">Pending</div></div>
+          <div class="adminStat"><div class="n" id="statApproved">0</div><div class="l">Approved</div></div>
+          <div class="adminStat"><div class="n" id="statRejected">0</div><div class="l">Rejected</div></div>
+          <div class="adminStat"><div class="n" id="statUsers">0</div><div class="l">Users</div></div>
+        </div>
+
+        <div class="adminCard">
+          <h3 class="adminTitle">User Balance Control</h3>
+          <input class="input" id="adminUid" placeholder="User UID" />
+          <input class="input" id="adminBalance" placeholder="New balance" />
+          <button class="btn small green" id="setBalanceBtn" style="margin-top:10px">Set Balance</button>
+          <div class="msg" id="adminBalanceMsg"></div>
+        </div>
+
+        <div class="adminCard">
+          <h3 class="adminTitle">Requests</h3>
+          <div class="row">
+            <select class="select" id="filterType">
+              <option value="all">All Types</option>
+              <option value="deposit">Deposits</option>
+              <option value="withdraw">Withdraws</option>
+            </select>
+            <select class="select" id="filterStatus">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+          <div id="adminRequestList" class="adminList" style="margin-top:14px"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottomShell">
+    <div class="bottomNav">
+      <div class="nav active" data-open="homeScreen">Home</div>
+      <div class="nav" data-open="ordersScreen">Orders</div>
+      <div class="nav" data-open="verificationScreen">Verify</div>
+      <div class="nav" data-open="settingsScreen">Settings</div>
+      <div class="nav" data-open="myScreen">My</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile,
+  GoogleAuthProvider, signInWithPopup, linkWithPopup, onAuthStateChanged, signOut,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection,
+  query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDVpb1qsoy0Nb37fbE_e1CdbWt8GKq_4Q",
+  authDomain: "hotnft-app.firebaseapp.com",
+  projectId: "hotnft-app",
+  storageBucket: "hotnft-app.firebasestorage.app",
+  messagingSenderId: "226518368208",
+  appId: "1:226518368208:web:a9002e1316b129258803d5"
+};
+
+const ADMIN_EMAIL = "muhammadfazal330@gmail.com";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+function isAdmin(user){ return !!(user && user.email === ADMIN_EMAIL); }
+
+function setMsg(id, text, ok=false){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = ok ? "msg ok" : "msg";
+}
+
+function openScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.open === id));
+  if (auth.currentUser) {
+    if (id === "ordersScreen") refreshOrders();
+    if (id === "adminScreen") refreshAdmin();
+    if (["homeScreen","myScreen","verificationScreen","settingsScreen","changePasswordScreen"].includes(id)) refreshUI();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.querySelectorAll('[data-open]').forEach(el => {
+  el.addEventListener('click', () => {
+    const target = el.dataset.open;
+    if (!auth.currentUser && target !== 'authScreen') openScreen('authScreen');
+    else openScreen(target);
+  });
+});
+
+document.getElementById('menuBtn').addEventListener('click', () => {
+  if (!auth.currentUser) openScreen('authScreen');
+  else if (isAdmin(auth.currentUser)) openScreen('adminScreen');
+  else openScreen('myScreen');
+});
+
+async function ensureUserDoc(user, nameOverride=""){
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      uid: user.uid,
+      name: nameOverride || user.displayName || (user.email ? user.email.split("@")[0] : "User"),
+      email: user.email || "",
+      balance: 0,
+      points: 10,
+      role: isAdmin(user) ? "admin" : "user",
+      createdAt: new Date().toISOString()
+    }, { merge: true });
+  }
+}
+
+document.getElementById('signupBtn').addEventListener('click', async () => {
+  try {
+    const name = document.getElementById('nameInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value.trim();
+    if (!email || !password) { setMsg('authMsg','Enter email and password'); return; }
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    if (name) await updateProfile(cred.user, { displayName:name });
+    await ensureUserDoc(cred.user, name);
+    setMsg('authMsg','Account created successfully', true);
+  } catch (e) {
+    setMsg('authMsg', e.message);
+  }
+});
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  try {
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value.trim();
+    if (!email || !password) { setMsg('authMsg','Enter email and password'); return; }
+    await signInWithEmailAndPassword(auth, email, password);
+    setMsg('authMsg','Login success', true);
+  } catch (e) {
+    setMsg('authMsg', e.message);
+  }
+});
+
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    await ensureUserDoc(result.user);
+  } catch (e) {
+    setMsg('authMsg', e.message);
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await signOut(auth);
+  openScreen('authScreen');
+});
+
+document.getElementById('linkGoogleBtn').addEventListener('click', async () => {
+  try {
+    if (!auth.currentUser) { openScreen('authScreen'); return; }
+    await linkWithPopup(auth.currentUser, provider);
+    setMsg('verifyMsg', 'Google account linked successfully', true);
+    await refreshUI();
+  } catch (e) {
+    setMsg('verifyMsg', e.message);
+  }
+});
+
+document.getElementById('sendResetBtn').addEventListener('click', async () => {
+  try {
+    if (!auth.currentUser?.email) { setMsg('resetMsg','No account email found'); return; }
+    await sendPasswordResetEmail(auth, auth.currentUser.email);
+    setMsg('resetMsg','Password reset email sent', true);
+  } catch (e) {
+    setMsg('resetMsg', e.message);
+  }
+});
+
+document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) { openScreen('authScreen'); return; }
+    const newName = document.getElementById('settingsName').value.trim();
+    if (!newName) { setMsg('settingsMsg','Enter display name'); return; }
+    await updateProfile(user, { displayName:newName });
+    await updateDoc(doc(db, "users", user.uid), {
+      name: newName,
+      updatedAt: new Date().toISOString()
+    });
+    setMsg('settingsMsg','Settings saved', true);
+    await refreshUI();
+  } catch (e) {
+    setMsg('settingsMsg', e.message);
+  }
+});
+
+function rowHtml(title, note, amount, status=''){
+  return `<div class="historyItem">
+    <div>
+      <div style="font-weight:700">${title}</div>
+      <div class="muted">${note || ''}</div>
+    </div>
+    <div>
+      ${status ? `<span class="pill ${status}">${status}</span>` : ''}
+      <div style="font-weight:700;text-align:right;margin-top:${status ? '6px' : '0'}">$${Number(amount || 0).toFixed(2)}</div>
+    </div>
+  </div>`;
+}
+
+async function refreshOrders(){
+  const user = auth.currentUser;
+  if (!user) return;
+  const depSnap = await getDocs(query(collection(db, "depositRequests"), where("userUid", "==", user.uid)));
+  const withSnap = await getDocs(query(collection(db, "withdrawRequests"), where("userUid", "==", user.uid)));
+  const deposits = depSnap.docs.map(d => ({ id:d.id, type:'deposit', ...d.data() }));
+  const withdraws = withSnap.docs.map(d => ({ id:d.id, type:'withdraw', ...d.data() }));
+  const all = [...deposits, ...withdraws].sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  document.getElementById('allOrdersCount').textContent = all.length;
+  document.getElementById('openOrdersCount').textContent = all.filter(x => x.status === 'pending').length;
+  document.getElementById('approvedOrdersCount').textContent = all.filter(x => x.status === 'approved' || x.status === 'paid').length;
+  document.getElementById('rejectedOrdersCount').textContent = all.filter(x => x.status === 'rejected').length;
+
+  const box = document.getElementById('ordersList');
+  if (!all.length) {
+    box.innerHTML = '<div class="muted">No orders yet.</div>';
+    return;
+  }
+  box.innerHTML = all.map(item => rowHtml(item.type, item.txHash || item.walletAddress || '', item.amount, item.status)).join('');
+}
+
+async function refreshUI(){
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  const data = snap.exists() ? snap.data() : {};
+  const balance = Number(data.balance || 0).toFixed(2);
+  const points = Number(data.points || 10);
+  const providers = (user.providerData || []).map(p => p.providerId);
+  const googleLinked = providers.includes('google.com');
+
+  document.getElementById('profileUsername').textContent = data.name || user.displayName || 'User';
+  document.getElementById('profileEmail').textContent = data.email || user.email || '-';
+  document.getElementById('profileRole').textContent = isAdmin(user) ? 'Admin' : (data.role || 'User');
+  document.getElementById('profilePoints').textContent = points;
+  document.getElementById('walletBalanceHome').textContent = balance;
+  document.getElementById('googleVerifyShort').textContent = googleLinked ? 'Bound' : 'Not Linked';
+
+  document.getElementById('verifyProvider').textContent = providers.length ? providers.join(', ') : '-';
+  document.getElementById('verifyEmailStatus').innerHTML = user.emailVerified ? '<span class="pill approved">Verified</span>' : '<span class="pill pending">Not Verified</span>';
+  document.getElementById('verifyGoogleStatus').innerHTML = googleLinked ? '<span class="pill approved">Linked</span>' : '<span class="pill pending">Not Linked</span>';
+  document.getElementById('verifyUid').textContent = user.uid;
+
+  document.getElementById('resetEmailText').textContent = user.email || '-';
+  document.getElementById('settingsEmail').textContent = user.email || '-';
+  document.getElementById('settingsRole').textContent = isAdmin(user) ? 'Admin' : (data.role || 'User');
+  document.getElementById('settingsName').value = data.name || user.displayName || '';
+
+  await refreshOrders();
+}
+
+document.getElementById('setBalanceBtn').addEventListener('click', async () => {
+  try {
+    const user = auth.currentUser;
+    if (!isAdmin(user)) { setMsg('adminBalanceMsg','Admin only'); return; }
+    const uid = document.getElementById('adminUid').value.trim();
+    const balance = document.getElementById('adminBalance').value.trim();
+    if (!uid || balance === '') { setMsg('adminBalanceMsg','Enter UID and balance'); return; }
+    await updateDoc(doc(db, "users", uid), {
+      balance: Number(balance),
+      updatedAt: new Date().toISOString()
+    });
+    setMsg('adminBalanceMsg','Balance updated', true);
+    await refreshAdmin();
+  } catch (e) {
+    setMsg('adminBalanceMsg', e.message);
+  }
+});
+
+document.getElementById('filterType').addEventListener('change', refreshAdmin);
+document.getElementById('filterStatus').addEventListener('change', refreshAdmin);
+
+async function approveDeposit(id, uid, amount){
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  const currentBalance = Number((userSnap.exists() ? userSnap.data().balance : 0) || 0);
+  await updateDoc(doc(db, "depositRequests", id), { status:"approved", updatedAt:new Date().toISOString() });
+  await updateDoc(userRef, { balance: currentBalance + Number(amount), updatedAt:new Date().toISOString() });
+}
+async function rejectDeposit(id){
+  await updateDoc(doc(db, "depositRequests", id), { status:"rejected", updatedAt:new Date().toISOString() });
+}
+async function approveWithdraw(id, uid, amount){
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+  const currentBalance = Number((userSnap.exists() ? userSnap.data().balance : 0) || 0);
+  const nextBalance = Math.max(0, currentBalance - Number(amount));
+  await updateDoc(doc(db, "withdrawRequests", id), { status:"approved", updatedAt:new Date().toISOString() });
+  await updateDoc(userRef, { balance: nextBalance, updatedAt:new Date().toISOString() });
+}
+async function rejectWithdraw(id){
+  await updateDoc(doc(db, "withdrawRequests", id), { status:"rejected", updatedAt:new Date().toISOString() });
+}
+async function markWithdrawPaid(id){
+  await updateDoc(doc(db, "withdrawRequests", id), { status:"paid", updatedAt:new Date().toISOString() });
+}
+
+window.approveDeposit = async (id,uid,amount) => { try{ await approveDeposit(id,uid,amount); await refreshAdmin(); await refreshOrders(); await refreshUI(); }catch(e){ alert(e.message); } };
+window.rejectDeposit = async (id) => { try{ await rejectDeposit(id); await refreshAdmin(); await refreshOrders(); await refreshUI(); }catch(e){ alert(e.message); } };
+window.approveWithdraw = async (id,uid,amount) => { try{ await approveWithdraw(id,uid,amount); await refreshAdmin(); await refreshOrders(); await refreshUI(); }catch(e){ alert(e.message); } };
+window.rejectWithdraw = async (id) => { try{ await rejectWithdraw(id); await refreshAdmin(); await refreshOrders(); await refreshUI(); }catch(e){ alert(e.message); } };
+window.markWithdrawPaid = async (id) => { try{ await markWithdrawPaid(id); await refreshAdmin(); await refreshOrders(); await refreshUI(); }catch(e){ alert(e.message); } };
+
+async function refreshAdmin(){
+  const user = auth.currentUser;
+  if (!isAdmin(user)) return;
+
+  const usersSnap = await getDocs(collection(db, "users"));
+  const depSnap = await getDocs(collection(db, "depositRequests"));
+  const withSnap = await getDocs(collection(db, "withdrawRequests"));
+
+  let items = [
+    ...depSnap.docs.map(d => ({ id:d.id, kind:'deposit', ...d.data() })),
+    ...withSnap.docs.map(d => ({ id:d.id, kind:'withdraw', ...d.data() }))
+  ];
+
+  const typeFilter = document.getElementById('filterType').value;
+  const statusFilter = document.getElementById('filterStatus').value;
+  if (typeFilter !== 'all') items = items.filter(x => x.kind === typeFilter);
+  if (statusFilter !== 'all') items = items.filter(x => x.status === statusFilter);
+
+  const allDocs = [...depSnap.docs, ...withSnap.docs];
+  document.getElementById('statPending').textContent = allDocs.filter(d => d.data().status === 'pending').length;
+  document.getElementById('statApproved').textContent = allDocs.filter(d => ['approved','paid'].includes(d.data().status)).length;
+  document.getElementById('statRejected').textContent = allDocs.filter(d => d.data().status === 'rejected').length;
+  document.getElementById('statUsers').textContent = usersSnap.size;
+
+  const list = document.getElementById('adminRequestList');
+  if (!items.length) {
+    list.innerHTML = '<div class="muted">No requests found.</div>';
+    return;
+  }
+
+  list.innerHTML = items.sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))).map(req => `
+    <div class="adminItem">
+      <div class="adminHead">
+        <div>
+          <div style="font-weight:700">${req.userEmail || ''}</div>
+          <div class="adminMeta">${req.kind.toUpperCase()} • $${Number(req.amount || 0).toFixed(2)}</div>
+          <div class="adminMeta">${req.txHash || req.walletAddress || ''}</div>
+          <div class="adminMeta">UID: ${req.userUid || ''}</div>
+        </div>
+        <div class="pill ${req.status || 'pending'}">${req.status || 'pending'}</div>
+      </div>
+      <div class="adminBtns">
+        ${req.kind === 'deposit' ? `<button class="btn small green" onclick="approveDeposit('${req.id}','${req.userUid}',${Number(req.amount || 0)})">Approve</button>` : ``}
+        ${req.kind === 'deposit' ? `<button class="btn small red" onclick="rejectDeposit('${req.id}')">Reject</button>` : ``}
+        ${req.kind === 'withdraw' ? `<button class="btn small green" onclick="approveWithdraw('${req.id}','${req.userUid}',${Number(req.amount || 0)})">Approve</button>` : ``}
+        ${req.kind === 'withdraw' ? `<button class="btn small red" onclick="rejectWithdraw('${req.id}')">Reject</button>` : ``}
+        ${req.kind === 'withdraw' ? `<button class="btn small warn" onclick="markWithdrawPaid('${req.id}')">Mark Paid</button>` : ``}
+      </div>
+    </div>
+  `).join('');
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await ensureUserDoc(user);
+    await refreshUI();
+    openScreen('homeScreen');
+  } else {
+    openScreen('authScreen');
+    document.getElementById('walletBalanceHome').textContent = '0.00';
+    document.getElementById('ordersList').innerHTML = '';
+  }
+});
+</script>
+</body>
+</html>
